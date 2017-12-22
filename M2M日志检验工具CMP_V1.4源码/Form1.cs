@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Windows.Forms;
+using System.Reflection;
 
 namespace M2MLogCheck
 {
@@ -30,7 +31,8 @@ namespace M2MLogCheck
             btnMca.Text = "<<";
             btnLog.Text = "<<";
             progressBar1.Visible = false;
-            this.Text = "M2M日志检验工具";
+            // 获取当前程序集Assembly的文件名
+            this.Text = Assembly.GetExecutingAssembly().GetName().Name;
 
         }
 
@@ -61,9 +63,10 @@ namespace M2MLogCheck
         {
             try
             {
+                //获取文件列表
                 string[] logFiles = M2M.GetFileList(txtLog.Text, "*.log");
                 string[] mcaFiles = M2M.GetFileList(txtMca.Text, "*.mca");
-
+                //合并文件
                 string mcaCombinePath = M2M.CombineMca(mcaFiles);
                 string logCombinePath = M2M.CombineLog(logFiles);
 
@@ -73,6 +76,7 @@ namespace M2MLogCheck
                 string desktopDir = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
                 //MessageBox.Show(desktopDir);
                 StreamWriter sWriter = new StreamWriter(desktopDir + "\\日志比对结果.txt");
+
                 sWriter.WriteLine("----------------------日志重复项------------------------------");
                 string logLine = null;
                 string mcaLine = null;
@@ -80,9 +84,11 @@ namespace M2MLogCheck
                 long mcaNumber = 0;
                 HashSet<string> hashSet = new HashSet<string>();
                 List<LogData> repeatList = new List<LogData>();
-                LogData logDate;
+                LogData logData;
                 string startLogICCID = null;
+                string startLogPrint = null;
                 string endLogICCID = null;
+                string endLogPrint = null;
 
                 //核对日志重复项
                 while ((logLine = logReader.ReadLine()) != null)
@@ -91,45 +97,49 @@ namespace M2MLogCheck
                     {
                         logNumber++;
                         string[] logFields = logLine.Split(',');
-                        logDate.ICCID = logFields[0];
-                        if (hashSet.Add(logDate.ICCID))
+                        logData.ICCID = logFields[0];
+                        logData.printData = logFields[1];
+                        if (hashSet.Add(logData.ICCID))
                         {
                             //ok;
                         }
                         else
                         {
-                            logDate.filePath = logFields[1];
-                            logDate.lineNumber = logFields[2];
-                            repeatList.Add(logDate);
+                            logData.filePath = logFields[2];
+                            logData.lineNumber = logFields[3];
+                            repeatList.Add(logData);
                         }
-                        //截取日志首尾号；
+                        //截取日志首尾号
                         if (logNumber == 1)
                         {
-                            startLogICCID = logDate.ICCID;
-                            endLogICCID = logDate.ICCID;
+                            startLogICCID = logData.ICCID;
+                            startLogPrint = logData.printData;
+                            endLogICCID = logData.ICCID;
+                            endLogPrint = logData.printData;
+                            
                         }
-
-                        if (String.Compare(logDate.ICCID, startLogICCID) < 0)
+                        // 获取日志文件中最小的号，作为首号
+                        if (String.Compare(logData.ICCID, startLogICCID) < 0)
                         {
-                            startLogICCID = logDate.ICCID;
-                            //startPrint = mcaDate.printData;
+                            startLogICCID = logData.ICCID;
+                            startLogPrint = logData.printData;
                         }
-                        if (String.Compare(logDate.ICCID, endLogICCID) > 0)
+                        
+                        // 获取日志文件中最大的号，作为尾号
+                        if (String.Compare(logData.ICCID, endLogICCID) > 0)
                         {
-                            endLogICCID = logDate.ICCID;
-                            //endPrint = mcaDate.printData;
+                            endLogICCID = logData.ICCID;
+                            endLogPrint = logData.printData;
                         }
-                    }
-
-
+                    }             
                 }
                 logReader.Close();
                 sWriter.WriteLine("重复卡号: " + repeatList.Count);
-                sWriter.WriteLine("重复ICCID,日志文件名,行号");
+                sWriter.WriteLine("重复ICCID,打印信息,日志文件名,行号");
 
                 for (int i = 0; i < repeatList.Count; i++)
                 {
-                    sWriter.WriteLine(repeatList[i].ICCID + "," + repeatList[i].filePath + "," + repeatList[i].lineNumber);
+                    sWriter.WriteLine(repeatList[i].ICCID + "," +repeatList[i].printData+ ","+repeatList[i].filePath + "," + repeatList[i].lineNumber);
                 }
                 sWriter.WriteLine();
                 sWriter.WriteLine();
@@ -138,9 +148,9 @@ namespace M2MLogCheck
                 List<McaData> lackList = new List<McaData>();
                 McaData mcaDate;
                 string startMcaICCID = null;
-                string startPrint = null;
+                string startMcaPrint = null;
                 string endMcaICCID = null;
-                string endPrint = null;
+                string endMcaPrint = null;
 
                 while ((mcaLine = mcaReader.ReadLine()) != null)
                 {
@@ -164,21 +174,22 @@ namespace M2MLogCheck
                         if(mcaNumber==1)
                         {
                             startMcaICCID = mcaDate.ICCID;
+                            startMcaPrint = mcaDate.printData;
                             endMcaICCID = mcaDate.ICCID;
+                            endMcaPrint = mcaDate.printData;
+                           
                         }
                         if (String.Compare(mcaDate.ICCID, startMcaICCID) < 0)
                         {
                             startMcaICCID = mcaDate.ICCID;
-                            startPrint = mcaDate.printData;
+                            startMcaPrint = mcaDate.printData;
                         }
                         if (String.Compare(mcaDate.ICCID , endMcaICCID)>0)
                         {
                             endMcaICCID = mcaDate.ICCID;
-                            endPrint = mcaDate.printData;
+                            endMcaPrint = mcaDate.printData;
                         }
-                    }
-
-
+                    }              
                 }
                 mcaReader.Close();
                 sWriter.WriteLine("缺失卡号: " + lackList.Count);
@@ -198,11 +209,11 @@ namespace M2MLogCheck
                 sWriter.WriteLine();
                 sWriter.WriteLine();
                 sWriter.WriteLine("----------------------日志比对范围-----------------------------");
-                sWriter.WriteLine("期望起始号段: " + startMcaICCID + "      打印信息： " + startPrint);
-                sWriter.WriteLine("期望结尾号段: " + endMcaICCID + "      打印信息： " + endPrint);
+                sWriter.WriteLine("数据起始号段: " + startMcaICCID + "      打印信息： " + startMcaPrint);
+                sWriter.WriteLine("数据结尾号段: " + endMcaICCID + "      打印信息： " + endMcaPrint);
                
-                sWriter.WriteLine("实际结尾号段: " + startLogICCID + "      打印信息： " + endPrint);
-                sWriter.WriteLine("实际结尾号段: " + endLogICCID + "      打印信息： " + endPrint);
+                sWriter.WriteLine("日志起始号段: " + startLogICCID + "      打印信息： " + startLogPrint);
+                sWriter.WriteLine("日志结尾号段: " + endLogICCID + "      打印信息： " + endLogPrint);
 
                 sWriter.WriteLine();
                 if (String.Equals(startMcaICCID, startLogICCID) && String.Equals(endMcaICCID, endLogICCID))
@@ -214,6 +225,13 @@ namespace M2MLogCheck
                 {
                     sWriter.WriteLine("首尾不匹配！！！");
                 }
+
+                sWriter.WriteLine();
+                sWriter.WriteLine(DateTime.Now.ToString()); //输出时间
+                sWriter.WriteLine();
+
+
+
                 sWriter.Close();
 
                 //删除临时文件

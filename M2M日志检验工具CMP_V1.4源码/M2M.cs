@@ -6,18 +6,19 @@ using System.IO;
 namespace M2MLogCheck
 {
     struct McaData
-        {
-            public string ICCID;          
-            public string printData;
-            public string filePath;
-            public string lineNumber;  
-        }
-      struct LogData
-        {
-           public string  ICCID;
-            public string  filePath;
-            public string  lineNumber;
-        }
+    {
+        public string ICCID;
+        public string printData;
+        public string filePath;
+        public string lineNumber;
+    }
+    struct LogData
+    {
+        public string ICCID;
+        public string printData;
+        public string filePath;
+        public string lineNumber;
+    }
 
 
     class M2M
@@ -123,25 +124,31 @@ namespace M2MLogCheck
             string temp = null;
             long lineNumber=0;
             StreamWriter sWriter = new StreamWriter(combinePath,false,Encoding.Default);
-            sWriter.WriteLine("检验ICCID,日志文件名,行号");
+            sWriter.WriteLine("检验ICCID,打印数据,日志文件名,行号");
             foreach (string filePath in filePaths)
             {
                 StreamReader sReader = new StreamReader(filePath, Encoding.Default);
                 lineNumber=0;
+                string iccid = null;
+                string printData = null;
                 while ((currentLine = sReader.ReadLine()) != null)
                 {
                     lineNumber++;
                     if (currentLine.IndexOf("]") > -1)
                     {
                         string[] temps = currentLine.Split(']');
-                        temp=temps[2];      //ICCID为第3列
-                        temp = temp.Replace("[", "");
-                        temp = temp.Replace(",", "");
-                        temp = temp.Replace(" =", "");
-                        temp = temp.Trim();
+                        iccid=temps[2];      //ICCID为第3列                     
+                        iccid = iccid.Replace("[", "");
+                        iccid = iccid.Replace(",", "");
+                        iccid = iccid.Replace(" =", "");
+                        iccid = iccid.Trim();
 
-                       
-                        temp = temp  + "," + Path.GetFileName(filePath)+ "," + lineNumber;
+                        printData = temps[3]; //打印数据为第4列
+                        printData = printData.Replace("[", "");
+                        printData = printData.Replace(",", "");
+                        printData = printData.Trim();
+
+                        temp = iccid + "," +printData+","+ Path.GetFileName(filePath)+ "," + lineNumber;
                         sWriter.WriteLine(temp);
                     }
                         

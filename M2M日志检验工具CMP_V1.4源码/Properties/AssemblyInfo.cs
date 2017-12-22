@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过以下
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("开发：彭世瑜")]
+[assembly: AssemblyTitle("开发:彭世瑜")]
 [assembly: AssemblyDescription("M2M日志检验工具")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("北京银证信通智能卡有限公司")]
