@@ -74,7 +74,13 @@ namespace M2MLogCheck
                 {
                     lineNumber++;
                     string[] temps = currentLine.Split(',');
-                    temp = temps[ICCIDIndex]+",";
+                    temp = temps[ICCIDIndex];
+                    //如果iccid倒序，需要将其正回来，变成8986开头
+                    if (temp.Substring(0, 4) == "9868")
+                    {
+                        temp = Swap(temp);
+                    }
+                    temp = temp + ",";
                     foreach (int i in printDatas)
                     {
                         temp += temps[i];//((i == printDatas[printDatas.Length-1]) ? "" : ",");
@@ -142,7 +148,11 @@ namespace M2MLogCheck
                         iccid = iccid.Replace(",", "");
                         iccid = iccid.Replace(" =", "");
                         iccid = iccid.Trim();
-
+                        //如果iccid倒序，需要将其正回来，变成8986开头
+                        if (iccid.Substring(0, 4) == "9868")
+                        {
+                            iccid = Swap(iccid);
+                        }
                         printData = temps[3]; //打印数据为第4列
                         printData = printData.Replace("[", "");
                         printData = printData.Replace(",", "");
@@ -185,8 +195,23 @@ namespace M2MLogCheck
             list.Sort();
             return list.ToArray();
         }
+        /// <summary>
+        /// 两两交换
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string Swap(string str)
+        {
+            StringBuilder builder = new StringBuilder();
+            if (str.Length % 2 != 0) return str;  //如果长度不是偶数，则原样返回
+            for (int i = 0; i < str.Length / 2; i++)
+            {
+                builder.Append(str[2 * i + 1]);
+                builder.Append(str[2 * i]);
+            }
+            return builder.ToString();
+        }
 
 
-       
     }
 }

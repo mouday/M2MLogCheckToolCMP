@@ -116,7 +116,7 @@ namespace M2MLogCheck
                             startLogPrint = logData.printData;
                             endLogICCID = logData.ICCID;
                             endLogPrint = logData.printData;
-                            
+
                         }
                         // 获取日志文件中最小的号，作为首号
                         if (String.Compare(logData.ICCID, startLogICCID) < 0)
@@ -124,14 +124,14 @@ namespace M2MLogCheck
                             startLogICCID = logData.ICCID;
                             startLogPrint = logData.printData;
                         }
-                        
+
                         // 获取日志文件中最大的号，作为尾号
                         if (String.Compare(logData.ICCID, endLogICCID) > 0)
                         {
                             endLogICCID = logData.ICCID;
                             endLogPrint = logData.printData;
                         }
-                    }             
+                    }
                 }
                 logReader.Close();
                 sWriter.WriteLine("重复卡号: " + repeatList.Count);
@@ -139,7 +139,7 @@ namespace M2MLogCheck
 
                 for (int i = 0; i < repeatList.Count; i++)
                 {
-                    sWriter.WriteLine(repeatList[i].ICCID + "," +repeatList[i].printData+ ","+repeatList[i].filePath + "," + repeatList[i].lineNumber);
+                    sWriter.WriteLine(repeatList[i].ICCID + "," + repeatList[i].printData + "," + repeatList[i].filePath + "," + repeatList[i].lineNumber);
                 }
                 sWriter.WriteLine();
                 sWriter.WriteLine();
@@ -164,32 +164,32 @@ namespace M2MLogCheck
                         mcaDate.lineNumber = mcaFields[3];
                         if (hashSet.Add(mcaDate.ICCID))
                         {
-                            
+
                             lackList.Add(mcaDate);
                         }
                         else
                         {
                             //ok;
                         }
-                        if(mcaNumber==1)
+                        if (mcaNumber == 1)
                         {
                             startMcaICCID = mcaDate.ICCID;
                             startMcaPrint = mcaDate.printData;
                             endMcaICCID = mcaDate.ICCID;
                             endMcaPrint = mcaDate.printData;
-                           
+
                         }
                         if (String.Compare(mcaDate.ICCID, startMcaICCID) < 0)
                         {
                             startMcaICCID = mcaDate.ICCID;
                             startMcaPrint = mcaDate.printData;
                         }
-                        if (String.Compare(mcaDate.ICCID , endMcaICCID)>0)
+                        if (String.Compare(mcaDate.ICCID, endMcaICCID) > 0)
                         {
                             endMcaICCID = mcaDate.ICCID;
                             endMcaPrint = mcaDate.printData;
                         }
-                    }              
+                    }
                 }
                 mcaReader.Close();
                 sWriter.WriteLine("缺失卡号: " + lackList.Count);
@@ -211,14 +211,13 @@ namespace M2MLogCheck
                 sWriter.WriteLine("----------------------日志比对范围-----------------------------");
                 sWriter.WriteLine("数据起始号段: " + startMcaICCID + "      打印信息： " + startMcaPrint);
                 sWriter.WriteLine("数据结尾号段: " + endMcaICCID + "      打印信息： " + endMcaPrint);
-               
+                sWriter.WriteLine();
                 sWriter.WriteLine("日志起始号段: " + startLogICCID + "      打印信息： " + startLogPrint);
                 sWriter.WriteLine("日志结尾号段: " + endLogICCID + "      打印信息： " + endLogPrint);
 
                 sWriter.WriteLine();
                 if (String.Equals(startMcaICCID, startLogICCID) && String.Equals(endMcaICCID, endLogICCID))
                 {
-                    
                     sWriter.WriteLine("首尾匹配");
                 }
                 else
@@ -227,10 +226,8 @@ namespace M2MLogCheck
                 }
 
                 sWriter.WriteLine();
-                sWriter.WriteLine(DateTime.Now.ToString()); //输出时间
-                sWriter.WriteLine();
-
-
+                //sWriter.WriteLine(DateTime.Now.ToString()); //输出时间
+                //sWriter.WriteLine();
 
                 sWriter.Close();
 
@@ -247,14 +244,11 @@ namespace M2MLogCheck
                 MessageBox.Show("ok!" + "\r\n" + "重复卡号: " + repeatList.Count +
                                             "\r\n" + "缺失卡号: " + lackList.Count);
             }
-        
-        catch(Exception ex)
-    {
-        MessageBox.Show("出问题了，请检查!");
-        
-    }
-       
-       
-    }
+            catch (Exception ex)
+            {
+                MessageBox.Show("出问题了，请检查!");
+
+            }
+        }
     }
 }
