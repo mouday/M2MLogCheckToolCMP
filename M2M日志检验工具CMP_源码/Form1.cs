@@ -34,6 +34,13 @@ namespace M2MLogCheck
             // 获取当前程序集Assembly的文件名
             this.Text = Assembly.GetExecutingAssembly().GetName().Name;
 
+            //为比对位数下拉列表增加可选参数
+            cmbLen.Items.Add("20");
+            cmbLen.Items.Add("19");
+            cmbLen.Items.Add("18");
+            cmbLen.Items.Add("0");
+            cmbLen.SelectedIndex = 0;
+
         }
 
         private void btnLog_Click(object sender, EventArgs e)
@@ -63,9 +70,13 @@ namespace M2MLogCheck
         {
             try
             {
+                // 获取内外不一致比对长度,0则不比对
+                int checkLen = Int32.Parse(cmbLen.Text);
+
                 //获取文件列表
                 string[] logFiles = M2M.GetFileList(txtLog.Text, "*.log");
                 string[] mcaFiles = M2M.GetFileList(txtMca.Text, "*.mca");
+
                 //合并文件
                 string mcaCombinePath = M2M.CombineMca(mcaFiles);
                 string logCombinePath = M2M.CombineLog(logFiles);
@@ -75,7 +86,8 @@ namespace M2MLogCheck
                 //获取当前系统桌面路径
                 string desktopDir = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
                 //MessageBox.Show(desktopDir);
-                StreamWriter sWriter = new StreamWriter(desktopDir + "\\日志比对结果.txt");
+                //unt-8编码
+                StreamWriter sWriter = new StreamWriter(desktopDir + "\\日志比对结果.txt", false, Encoding.UTF8);
 
                 sWriter.WriteLine("----------------------日志重复项------------------------------");
                 string logLine = null;
@@ -84,6 +96,7 @@ namespace M2MLogCheck
                 long mcaNumber = 0;
                 HashSet<string> hashSet = new HashSet<string>();
                 List<LogData> repeatList = new List<LogData>();
+                List<LogData> inOutDifferetList = new List<LogData>();  //内外信息不一致
                 LogData logData;
                 string startLogICCID = null;
                 string startLogPrint = null;
@@ -99,14 +112,14 @@ namespace M2MLogCheck
                         string[] logFields = logLine.Split(',');
                         logData.ICCID = logFields[0];
                         logData.printData = logFields[1];
+                        logData.filePath = logFields[2];
+                        logData.lineNumber = logFields[3];
                         if (hashSet.Add(logData.ICCID))
                         {
                             //ok;
                         }
                         else
                         {
-                            logData.filePath = logFields[2];
-                            logData.lineNumber = logFields[3];
                             repeatList.Add(logData);
                         }
                         //截取日志首尾号
@@ -131,6 +144,17 @@ namespace M2MLogCheck
                             endLogICCID = logData.ICCID;
                             endLogPrint = logData.printData;
                         }
+
+                        //比较内外不一致
+                        if (checkLen != 0)
+                        {
+                            LogData log = handleData(logData, checkLen);
+                            if (log.ICCID != log.printData)
+                            {
+                                inOutDifferetList.Add(log);
+                            }
+                        }
+
                     }
                 }
                 logReader.Close();
@@ -143,6 +167,20 @@ namespace M2MLogCheck
                 }
                 sWriter.WriteLine();
                 sWriter.WriteLine();
+                if (checkLen != 0)
+                {
+                    //--------------输出内外不一致的信息-------------------
+                    sWriter.WriteLine("--------------------内外不一致结果汇总---------------------------");
+                    sWriter.WriteLine("内外不一致卡号: " + inOutDifferetList.Count);
+                    sWriter.WriteLine("不一致ICCID,打印信息,日志文件名,行号");
+
+                    for (int i = 0; i < inOutDifferetList.Count; i++)
+                    {
+                        sWriter.WriteLine(inOutDifferetList[i].ICCID + "," + inOutDifferetList[i].printData + "," + inOutDifferetList[i].filePath + "," + inOutDifferetList[i].lineNumber);
+                    }
+                    sWriter.WriteLine();
+                    sWriter.WriteLine();
+                }
                 sWriter.WriteLine("----------------------日志缺失项------------------------------");
                 //核对日志缺失
                 List<McaData> lackList = new List<McaData>();
@@ -206,6 +244,7 @@ namespace M2MLogCheck
                 sWriter.WriteLine("日志数据: " + logNumber + " 条");
                 sWriter.WriteLine("重复卡号: " + repeatList.Count);
                 sWriter.WriteLine("缺失卡号: " + lackList.Count);
+                sWriter.WriteLine("内外不一致: " + inOutDifferetList.Count);
                 sWriter.WriteLine();
                 sWriter.WriteLine();
                 sWriter.WriteLine("----------------------日志比对范围-----------------------------");
@@ -231,7 +270,7 @@ namespace M2MLogCheck
 
                 sWriter.Close();
 
-                //删除临时文件
+                ////删除临时文件
                 if (File.Exists(mcaCombinePath))
                 {
                     File.Delete(mcaCombinePath);
@@ -240,15 +279,35 @@ namespace M2MLogCheck
                 {
                     File.Delete(logCombinePath);
                 }
-
                 MessageBox.Show("ok!" + "\r\n" + "重复卡号: " + repeatList.Count +
-                                            "\r\n" + "缺失卡号: " + lackList.Count);
+                                            "\r\n" + "缺失卡号: " + lackList.Count +
+                                             "\r\n" + "内外不一致: " + inOutDifferetList.Count);
             }
             catch (Exception ex)
             {
                 MessageBox.Show("出问题了，请检查!");
-
             }
+        }
+
+        /// <summary>
+        /// 处理巴基斯坦日志类型
+        /// </summary>
+        /// <param name="log"></param>
+        /// <param name="checklen"></param>
+        /// <returns></returns>
+        private static LogData handleData(LogData log,int checklen) {
+            string print = log.printData;
+            string iccid = log.ICCID;
+
+            if (print.Length >= checklen) {
+                log.printData = print.Substring(0, checklen);
+            }
+            if (iccid.Length >= checklen)
+            {
+                log.ICCID = iccid.Substring(0, checklen);
+            }
+            return log;
+
         }
     }
 }

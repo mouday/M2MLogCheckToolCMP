@@ -76,7 +76,7 @@ namespace M2MLogCheck
                     string[] temps = currentLine.Split(',');
                     temp = temps[ICCIDIndex];
                     //如果iccid倒序，需要将其正回来，变成8986开头
-                    if (temp.Substring(0, 4) == "9868")
+                    if (temp.Substring(0, 2) == "98")
                     {
                         temp = Swap(temp);
                     }
@@ -148,8 +148,9 @@ namespace M2MLogCheck
                         iccid = iccid.Replace(",", "");
                         iccid = iccid.Replace(" =", "");
                         iccid = iccid.Trim();
-                        //如果iccid倒序，需要将其正回来，变成8986开头
-                        if (iccid.Substring(0, 4) == "9868")
+
+                        //如果iccid倒序，需要将其正回来，变成8986开头      
+                        if (iccid.Substring(0, 2) == "98")
                         {
                             iccid = Swap(iccid);
                         }
@@ -202,16 +203,16 @@ namespace M2MLogCheck
         /// <returns></returns>
         public static string Swap(string str)
         {
-            StringBuilder builder = new StringBuilder();
             if (str.Length % 2 != 0) return str;  //如果长度不是偶数，则原样返回
+
+            StringBuilder builder = new StringBuilder();
             for (int i = 0; i < str.Length / 2; i++)
             {
                 builder.Append(str[2 * i + 1]);
                 builder.Append(str[2 * i]);
             }
             return builder.ToString();
+
         }
-
-
     }
 }

@@ -40,8 +40,10 @@
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.cmbLen = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -101,7 +103,7 @@
             // 
             // btnCheck
             // 
-            this.btnCheck.Location = new System.Drawing.Point(190, 178);
+            this.btnCheck.Location = new System.Drawing.Point(189, 202);
             this.btnCheck.Name = "btnCheck";
             this.btnCheck.Size = new System.Drawing.Size(97, 31);
             this.btnCheck.TabIndex = 6;
@@ -134,23 +136,42 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(164, 17);
             this.toolStripStatusLabel1.Text = "北京银证信通智能卡有限公司";
             // 
-            // toolStripStatusLabel2
-            // 
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(187, 17);
-            this.toolStripStatusLabel2.Text = "彭世瑜 - pengshiyx@gmail.com";
-            // 
             // toolStripStatusLabel3
             // 
             this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
             this.toolStripStatusLabel3.Size = new System.Drawing.Size(118, 17);
             this.toolStripStatusLabel3.Spring = true;
             // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(187, 17);
+            this.toolStripStatusLabel2.Text = "彭世瑜 - pengshiyx@gmail.com";
+            // 
+            // cmbLen
+            // 
+            this.cmbLen.FormattingEnabled = true;
+            this.cmbLen.Location = new System.Drawing.Point(83, 137);
+            this.cmbLen.Name = "cmbLen";
+            this.cmbLen.Size = new System.Drawing.Size(121, 20);
+            this.cmbLen.TabIndex = 9;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 141);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(65, 12);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "比对位数：";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(484, 322);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.cmbLen);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.btnCheck);
@@ -189,6 +210,8 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.ComboBox cmbLen;
+        private System.Windows.Forms.Label label3;
     }
 }
 

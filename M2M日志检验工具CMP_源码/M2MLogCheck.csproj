@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>M2MLogCheck</RootNamespace>
-    <AssemblyName>M2M日志检验工具V1.5</AssemblyName>
+    <AssemblyName>M2M日志检验工具V1.6</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
